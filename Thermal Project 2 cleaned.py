@@ -11,8 +11,8 @@ from pandas import DataFrame
 #Function returns reversible work and irriversibility of a process
 def rev_irrev(hin, hout, sin, sout, Tin, Qin, Qout, mdotratio):
     To = 300
-    irrev = mdotratio*(Qout+To*(sout-sin))
-    rev = ((hin-hout)-To*(sin-sout))*mdotratio+Qin*(1-(To/Tin))*mdotratio
+    irrev = mdotratio*(To*(sout-sin))
+    rev = ((hin-hout)-To*(sin-sout))*mdotratio
     return rev, irrev
   
 #Function returns the actual enthalpy at the outlet of a pump     
@@ -176,14 +176,14 @@ for pr in range(3,21):
     n_thermal = Wnet/Q67      # Thermal efficiency of Cogen cycle
     
     #Reversible work and irreversibility
-    Wrev12, i12 = rev_irrev(h1, h2, s1, s2, T1, 0, 0, mDotRatio)         # Pump - Rankine
-    Wrev23, i23 = rev_irrev(h2, h3, s2, s3, T2, (h3-h2), 0, mDotRatio)   # HRSG - Rankine
-    Wrev34, i34 = rev_irrev(h3, h4, s3, s4, T3, 0, 0, mDotRatio)         # Turbine - Rankine
-    Wrev41, i41 = rev_irrev(h4, h1, s4, s1, T4, 0, -Q41, mDotRatio)      # Condenser - Rankine
-    Wrev56, i56 = rev_irrev(h5, h6, s5, s6, T5, 0, 0, 1)         # Compressor - Brayton
-    Wrev67, i67 = rev_irrev(h6, h7, s6, s7, T6, Q67, 0, 1)       # Combustion Chamber - Brayton
-    Wrev78, i78 = rev_irrev(h7, h8, s7, s8, T7, 0, 0, 1)         # Turbine - Brayton
-    Wrev89, i89 = rev_irrev(h8, h9, s8, s9, T8, 0, (h8-h9), 1)   # HRSG - Brayton
+    Wrev12, i12 = rev_irrev(h1, h2, s1, s2, T1, 0, 0, mDotRatio)        # Pump - Rankine
+    Wrev23, i23 = rev_irrev(h2, h3, s2, s3, T2, (h3-h2), 0, mDotRatio)  # HRSG - Rankine
+    Wrev34, i34 = rev_irrev(h3, h4, s3, s4, T3, 0, 0, mDotRatio)        # Turbine - Rankine
+    Wrev41, i41 = rev_irrev(h4, h1, s1, s4, T4, 0, (h4-h1), mDotRatio)  # Condenser - Rankine
+    Wrev56, i56 = rev_irrev(h5, h6, s5, s6, T5, 0, 0, 1)                # Compressor - Brayton
+    Wrev67, i67 = rev_irrev(h6, h7, s6, s7, T6, Q67, 0, 1)              # Combustion Chamber - Brayton
+    Wrev78, i78 = rev_irrev(h7, h8, s7, s8, T7, 0, 0, 1)                # Turbine - Brayton
+    Wrev89, i89 = rev_irrev(h8, h9, s8, s9, T8, 0, (h8-h9), 1)          # HRSG - Brayton
     
     #Second Law Efficiencies
     nII12 = Wrev12/W12    # Pump - Rankine
@@ -271,7 +271,7 @@ best_pr = _n_thermal.index(max(_n_thermal))+3
 print('The max effeciency is: ', max(_n_thermal))
 print('The most effecient Pressure Ratio is: ', best_pr)
 
-_process = ["Compressor", "Combustion Chamber", "Gas Turbine", "Gas HRSG", "Pump", "Steam HRSG", "Steam Turbine", "Condensor"]
+_process = ["Pump - Rankine", "HRSG - Rankine", "Steam Turbine - Rankine", "Condensor - Rankine", "Compressor - Brayton", "Combustion Chamber - Brayton", "Gas Turbine - Brayton", "HRSG - Brayton"]
 _i_best_pr = [_i12[best_pr],_i23[best_pr],_i34[best_pr],_i41[best_pr],_i56[best_pr],_i67[best_pr],_i78[best_pr],_i89[best_pr]]
 _delta_h_best_pr = [-_W12[best_pr],_Q23[best_pr],-_W34[best_pr],_Q41[best_pr],-_W56[best_pr],_Q67[best_pr],-_W78[best_pr],_Q89[best_pr]]
 _Q_best_pr = [0, _Q23[best_pr], 0, _Q41[best_pr], 0, _Q67[best_pr], 0, _Q89[best_pr]]
